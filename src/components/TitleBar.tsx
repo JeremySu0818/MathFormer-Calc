@@ -1,4 +1,4 @@
-interface TitleBarProps {}
+interface TitleBarProps { }
 
 function TitleBar(_props: TitleBarProps) {
   const handleMinimize = () => {
@@ -16,11 +16,11 @@ function TitleBar(_props: TitleBarProps) {
   return (
     <div className="title-bar">
       <div className="title-bar-title">
-        <svg 
-          className="title-bar-icon" 
-          viewBox="0 0 24 24" 
-          fill="none" 
-          stroke="currentColor" 
+        <svg
+          className="title-bar-icon"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
           strokeWidth="1.5"
         >
           <circle cx="12" cy="12" r="10" />
@@ -28,15 +28,15 @@ function TitleBar(_props: TitleBarProps) {
         </svg>
         <span className="title-bar-text">MathFormer</span>
       </div>
-      
+
       <div className="title-bar-controls">
-        <button 
-          className="title-bar-btn minimize" 
+        <button
+          className="title-bar-btn minimize"
           onClick={handleMinimize}
           aria-label="Minimize window"
         />
-        <button 
-          className="title-bar-btn close" 
+        <button
+          className="title-bar-btn close"
           onClick={handleClose}
           aria-label="Close window"
         />

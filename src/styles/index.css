@@ -1,10 +1,4 @@
-/* ==========================================================================
-   MathFormer Calculator - Premium Glassmorphism Design
-   ========================================================================== */
-
-/* CSS Custom Properties - Design Tokens */
 :root {
-  /* Colors - Monochromatic palette for elegance */
   --color-bg-primary: rgba(10, 10, 20, 0.75);
   --color-bg-glass: rgba(255, 255, 255, 0.08);
   --color-bg-glass-hover: rgba(255, 255, 255, 0.12);
@@ -18,51 +12,42 @@
   --color-bg-equals: rgba(80, 180, 200, 0.25);
   --color-bg-equals-hover: rgba(80, 180, 200, 0.35);
 
-  /* Text colors */
   --color-text-primary: rgba(255, 255, 255, 0.95);
   --color-text-secondary: rgba(255, 255, 255, 0.65);
   --color-text-muted: rgba(255, 255, 255, 0.4);
   --color-text-accent: rgba(160, 200, 255, 0.95);
 
-  /* Border colors */
   --color-border: rgba(255, 255, 255, 0.08);
   --color-border-light: rgba(255, 255, 255, 0.12);
 
-  /* Shadows */
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.15);
   --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.2);
   --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.3);
   --shadow-glow: 0 0 20px rgba(100, 150, 200, 0.15);
 
-  /* Blur values */
   --blur-glass: 20px;
   --blur-heavy: 30px;
 
-  /* Spacing */
   --spacing-xs: 4px;
   --spacing-sm: 8px;
   --spacing-md: 12px;
   --spacing-lg: 16px;
   --spacing-xl: 24px;
 
-  /* Border radius */
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;
   --radius-xl: 24px;
 
-  /* Typography */
   --font-primary:
     "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-mono: "JetBrains Mono", "SF Mono", "Fira Code", monospace;
 
-  /* Transitions */
   --transition-fast: 0.15s ease;
   --transition-normal: 0.25s ease;
   --transition-slow: 0.4s ease;
 }
 
-/* Reset & Base */
 *,
 *::before,
 *::after {
@@ -89,10 +74,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* ==========================================================================
-   Main Application Container
-   ========================================================================== */
-
 .app {
   width: 100%;
   height: 100%;
@@ -118,10 +99,6 @@ body {
   background: var(--color-bg-primary);
   backdrop-filter: blur(2px);
 }
-
-/* ==========================================================================
-   Title Bar (Window Controls)
-   ========================================================================== */
 
 .title-bar {
   display: flex;
@@ -183,10 +160,6 @@ body {
   background: rgba(255, 95, 86, 0.8);
 }
 
-/* ==========================================================================
-   Calculator Container
-   ========================================================================== */
-
 .calculator {
   flex: 1;
   display: flex;
@@ -197,10 +170,6 @@ body {
   position: relative;
   z-index: 10;
 }
-
-/* ==========================================================================
-   Display Section
-   ========================================================================== */
 
 .display {
   background: var(--color-bg-glass);
@@ -308,10 +277,6 @@ body {
   opacity: 0.7;
 }
 
-/* ==========================================================================
-   Keypad Section
-   ========================================================================== */
-
 .keypad {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -327,7 +292,6 @@ body {
   flex: 1;
 }
 
-/* Grid area assignments for buttons */
 .btn-area-c { grid-area: c; }
 .btn-area-ce { grid-area: ce; }
 .btn-area-sign { grid-area: sign; }
@@ -347,10 +311,6 @@ body {
 .btn-area-n0 { grid-area: n0; }
 .btn-area-dot { grid-area: dot; }
 .btn-area-eq { grid-area: eq; }
-
-/* ==========================================================================
-   Button Styles
-   ========================================================================== */
 
 .btn {
   display: flex;
@@ -388,7 +348,6 @@ body {
   transform: scale(0.96);
 }
 
-/* Number buttons */
 .btn-number {
   background: var(--color-bg-button);
   backdrop-filter: blur(var(--blur-glass));
@@ -404,7 +363,6 @@ body {
   background: var(--color-bg-button-active);
 }
 
-/* Operator buttons */
 .btn-operator {
   background: var(--color-bg-operator);
   backdrop-filter: blur(var(--blur-glass));
@@ -426,7 +384,6 @@ body {
   box-shadow: var(--shadow-glow);
 }
 
-/* Function buttons */
 .btn-function {
   background: var(--color-bg-glass);
   backdrop-filter: blur(var(--blur-glass));
@@ -444,7 +401,6 @@ body {
   background: var(--color-bg-glass-active);
 }
 
-/* Equals button */
 .btn-equals {
   background: var(--color-bg-equals);
   backdrop-filter: blur(var(--blur-glass));
@@ -462,10 +418,6 @@ body {
 .btn-equals:active {
   background: rgba(80, 180, 200, 0.45);
 }
-
-/* ==========================================================================
-   Status & Info Section
-   ========================================================================== */
 
 .status-bar {
   display: flex;
@@ -509,20 +461,12 @@ body {
   text-transform: uppercase;
 }
 
-/* ==========================================================================
-   Error Message
-   ========================================================================== */
-
 .error-message {
   color: rgba(255, 120, 120, 0.9);
   font-size: 12px;
   text-align: right;
   margin-top: var(--spacing-xs);
 }
-
-/* ==========================================================================
-   Responsive Adjustments
-   ========================================================================== */
 
 @media (max-height: 600px) {
   .display {
@@ -539,10 +483,6 @@ body {
   }
 }
 
-/* ==========================================================================
-   Animations & Effects
-   ========================================================================== */
-
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -558,7 +498,6 @@ body {
   animation: fadeIn 0.4s ease-out;
 }
 
-/* Ripple effect for buttons */
 .btn-ripple {
   position: absolute;
   border-radius: 50%;
@@ -574,9 +513,6 @@ body {
     opacity: 0;
   }
 }
-/* ==========================================================================
-   Setup Overlay (Backend Initialization)
-   ========================================================================== */
 
 .setup-overlay {
   position: absolute;

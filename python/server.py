@@ -9,7 +9,6 @@ from socketserver import ThreadingMixIn
 _BACKEND = None
 _BACKEND_NAME = "lite"
 
-
 def _load_backend():
     global _BACKEND, _BACKEND_NAME
     backend_mode = os.environ.get("MATHFORMER_BACKEND", "").strip().lower()
@@ -25,10 +24,8 @@ def _load_backend():
         _BACKEND = None
         _BACKEND_NAME = "lite"
 
-
 _load_backend()
 
-# Define a threaded HTTP server
 class ThreadingHTTPServer(ThreadingMixIn, HTTPServer):
     daemon_threads = True
 
@@ -53,7 +50,6 @@ class CalculatorHandler(BaseHTTPRequestHandler):
                 self._send_response(400, {'error': 'Missing arguments'})
                 return
 
-            # Parse numbers
             try:
                 num_a = int(float(a))
                 num_b = int(float(b))
@@ -83,8 +79,6 @@ class CalculatorHandler(BaseHTTPRequestHandler):
             self._send_response(500, {'error': str(e)})
 
     def log_message(self, format, *args):
-        # Override to suppress logging to stderr for every request if needed, 
-        # or keep it for debugging. Let's keep it but maybe simplified.
         sys.stderr.write("%s - - [%s] %s\n" %
                          (self.client_address[0],
                           self.log_date_time_string(),
@@ -93,7 +87,6 @@ class CalculatorHandler(BaseHTTPRequestHandler):
 def run(port=0):
     server_address = ('127.0.0.1', port)
     httpd = ThreadingHTTPServer(server_address, CalculatorHandler)
-    # Print the port so Electron can capture it
     port = httpd.server_port
     print(f"PORT:{port}", flush=True)
     httpd.serve_forever()

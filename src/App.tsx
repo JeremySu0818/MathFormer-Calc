@@ -27,11 +27,10 @@ const initialState: CalculatorState = {
 
 function App() {
   const [state, setState] = useState<CalculatorState>(initialState);
-  const [isBackendReady, setIsBackendReady] = useState<boolean>(true);
+  const [isBackendReady, setIsBackendReady] = useState<boolean>(false);
   const [isInstalling, setIsInstalling] = useState<boolean>(false);
   const [installLogs, setInstallLogs] = useState<string[]>([]);
 
-  // Auto-install backend if not ready
   const startInstallation = async () => {
     if (!window.electronAPI || isInstalling) return;
     setIsInstalling(true);
@@ -41,19 +40,24 @@ function App() {
     } catch (err) {
       setInstallLogs(prev => [...prev, `安裝失敗: ${err instanceof Error ? err.message : String(err)}`]);
     }
-    // Note: we don't set isInstalling to false - if it fails, show error in logs
   };
 
-  // Check backend status on mount and auto-install if needed
   useEffect(() => {
     if (window.electronAPI) {
-      window.electronAPI.checkBackendStatus().then((ready) => {
-        setIsBackendReady(ready);
-        if (!ready) {
-          // Auto-start installation when backend is not ready
+      window.electronAPI.checkBackendStatus().then((installed) => {
+        if (!installed) {
           setIsInstalling(true);
           startInstallation();
+        } else {
+          window.electronAPI.checkBackendReady().then((ready) => {
+            if (ready) setIsBackendReady(true);
+          });
         }
+      });
+
+      window.electronAPI.onBackendReady(() => {
+        setIsBackendReady(true);
+        setIsInstalling(false);
       });
 
       window.electronAPI.onBackendLog((log) => {
@@ -75,7 +79,6 @@ function App() {
 
       const newValue = prev.displayValue === '0' ? digit : prev.displayValue + digit;
 
-      // Limit display length
       if (newValue.length > 15) return prev;
 
       return {
@@ -133,7 +136,6 @@ function App() {
       const value = prev.displayValue;
 
       if (prev.previousValue === null) {
-        // First operand
         const opSymbol = getOperationSymbol(nextOperation);
         return {
           ...prev,
@@ -147,11 +149,9 @@ function App() {
       return prev;
     });
 
-    // If we have a previous operation, calculate first
     if (state.previousValue !== null && state.operation && !state.waitingForOperand) {
       await calculate(state.operation, state.previousValue, state.displayValue, nextOperation);
     } else if (state.previousValue !== null && nextOperation) {
-      // Just update the operation
       setState(prev => ({
         ...prev,
         operation: nextOperation,
@@ -178,11 +178,9 @@ function App() {
     try {
       let result: string;
 
-      // Check if electronAPI is available (running in Electron)
       if (window.electronAPI) {
         result = await window.electronAPI.calculate(op, prevValue, currValue);
       } else {
-        // Fallback for browser development
         result = calculateLocally(op, prevValue, currValue);
       }
 
@@ -246,7 +244,6 @@ function App() {
     });
   }, []);
 
-  // Keyboard support
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key >= '0' && e.key <= '9') {
@@ -315,9 +312,11 @@ function App() {
       {!isBackendReady && (
         <div className="setup-overlay">
           <div className="setup-card">
-            <div className="setup-title">正在安裝依賴</div>
+            <div className="setup-title">{isInstalling ? "正在安裝依賴" : "正在啟動 MathFormer"}</div>
             <div className="setup-desc">
-              正在下載並安裝 MathFormer 神經網路引擎，請稍候...
+              {isInstalling
+                ? "正在下載並安裝 MathFormer 神經網路引擎，請稍候..."
+                : "正在初始化神經網路引擎並驗證計算能力..."}
             </div>
 
             <div className="setup-progress">

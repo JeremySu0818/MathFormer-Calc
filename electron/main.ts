@@ -15,13 +15,10 @@ const packagedServerScriptPath = isDev
   ? path.join(__dirname, "../python/server.py")
   : path.join(process.resourcesPath, "python", "server.py");
 
-// Check if backend is properly installed
 function isBackendInstalled(): boolean {
   if (isDev) {
-    // In dev, we use uv run directly
     return true;
   }
-  // In production, check if python venv exists with mathformer installed
   return fs.existsSync(pythonBin);
 }
 
@@ -71,7 +68,6 @@ function startPythonBackend(): void {
       CUDA_VISIBLE_DEVICES: "",
     };
   } else {
-    // In production, MUST use the installed venv with mathformer
     if (!fs.existsSync(pythonBin)) {
       console.error(`Python environment not found at ${pythonBin}. Please install dependencies first.`);
       return;
@@ -89,7 +85,7 @@ function startPythonBackend(): void {
 
   pythonProcess = spawn(pythonExecutable, pythonArgs, {
     cwd: backendDir,
-    shell: isDev, // Use shell only for 'uv' command in dev
+    shell: isDev,
     env,
   });
 
@@ -100,8 +96,32 @@ function startPythonBackend(): void {
     if (pythonPort === null) {
       const match = output.match(/PORT:(\d+)/);
       if (match) {
-        pythonPort = parseInt(match[1], 10);
-        console.log(`Python server ready on port ${pythonPort}`);
+        const port = parseInt(match[1], 10);
+        console.log(`Python server started on port ${port}, verifying capability...`);
+
+        const verify = async () => {
+          try {
+            const response = await fetch(`http://127.0.0.1:${port}`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ operation: 'add', a: '0', b: '0' }),
+            });
+
+            if (response.ok) {
+              pythonPort = port;
+              console.log(`Backend verified and ready on port ${pythonPort}`);
+              mainWindow?.webContents.send("backend-ready");
+            } else {
+              console.log("Backend started but not ready, retrying...");
+              setTimeout(verify, 500);
+            }
+          } catch (e) {
+            console.log("Backend verification failed, retrying...");
+            setTimeout(verify, 500);
+          }
+        };
+
+        verify();
       }
     }
   });
@@ -116,7 +136,6 @@ function startPythonBackend(): void {
   });
 }
 
-// IPC handlers for calculator operations
 ipcMain.handle(
   "calculate",
   async (_event, operation: string, a: string, b: string) => {
@@ -151,12 +170,14 @@ ipcMain.handle(
   },
 );
 
-// Check if backend dependencies are installed
 ipcMain.handle("check-backend-status", async () => {
   return isBackendInstalled();
 });
 
-// Install backend dependencies using uv
+ipcMain.handle("check-backend-ready", () => {
+  return pythonPort !== null;
+});
+
 ipcMain.handle("install-backend", async () => {
   const uvExecutable = isDev ? "uv" : path.join(process.resourcesPath, "uv.exe");
 
@@ -176,7 +197,6 @@ ipcMain.handle("install-backend", async () => {
   }
 
   return new Promise<void>((resolve, reject) => {
-    // 1. Create venv using uv
     log("正在建立虛擬環境...");
     const venvProc = spawn(uvExecutable, ["venv", envPath], { shell: isDev });
 
@@ -188,7 +208,6 @@ ipcMain.handle("install-backend", async () => {
 
       log("環境建立完成，正在安裝 MathFormer 依賴 (這可能需要幾分鐘)...");
 
-      // 2. Install dependencies - mathformer and torch (CPU version)
       const installArgs = [
         "pip", "install",
         "mathformer", "torch",
@@ -211,7 +230,6 @@ ipcMain.handle("install-backend", async () => {
   });
 });
 
-// Window control handlers
 ipcMain.on("window-minimize", () => {
   mainWindow?.minimize();
 });
@@ -224,14 +242,11 @@ app.whenReady().then(async () => {
   createWindow();
 
   if (isDev) {
-    // In dev, start backend immediately
     startPythonBackend();
   } else {
-    // In production, check if backend is installed
     if (isBackendInstalled()) {
       startPythonBackend();
     }
-    // If not installed, the renderer will show installation UI
   }
 
   app.on("activate", () => {
