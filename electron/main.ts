@@ -200,14 +200,14 @@ ipcMain.handle("install-backend", async () => {
     mainWindow?.webContents.send("backend-log", msg);
   };
 
-  log("正在初始化 Python 環境...");
+  log("Initializing Python environment...");
 
   if (!fs.existsSync(path.dirname(envPath))) {
     fs.mkdirSync(path.dirname(envPath), { recursive: true });
   }
 
   return new Promise<void>((resolve, reject) => {
-    log("正在建立虛擬環境...");
+    log("Creating virtual environment...");
     const venvProc = spawn(uvExecutable, ["venv", envPath], { shell: isDev });
 
     venvProc.stdout?.on("data", (data) => log(data.toString()));
@@ -216,7 +216,7 @@ ipcMain.handle("install-backend", async () => {
     venvProc.on("close", (code) => {
       if (code !== 0) return reject(new Error("Failed to create venv"));
 
-      log("環境建立完成，正在安裝 MathFormer 依賴 (這可能需要幾分鐘)...");
+      log("Environment created, installing MathFormer dependencies (this may take a few minutes)...");
 
       const installArgs = [
         "pip", "install",
@@ -232,10 +232,10 @@ ipcMain.handle("install-backend", async () => {
 
       installProc.on("close", (code) => {
         if (code !== 0) return reject(new Error("Failed to install dependencies"));
-        log("安裝完成！正在啟動後端並載入 MathFormer 模型...");
+        log("Installation complete! Starting backend and loading MathFormer model...");
         mainWindow?.webContents.send("install-complete");
         startPythonBackend(() => {
-          log("後端已就緒！");
+          log("Backend is ready!");
           resolve();
         });
       });

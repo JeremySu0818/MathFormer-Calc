@@ -38,7 +38,7 @@ function App() {
       await window.electronAPI.installBackend();
       setIsInstalling(false);
     } catch (err) {
-      setInstallLogs(prev => [...prev, `安裝失敗: ${err instanceof Error ? err.message : String(err)}`]);
+      setInstallLogs(prev => [...prev, `Installation failed: ${err instanceof Error ? err.message : String(err)}`]);
       setIsInstalling(false);
     }
   };
@@ -317,11 +317,11 @@ function App() {
       {!isBackendReady && (
         <div className="setup-overlay">
           <div className="setup-card">
-            <div className="setup-title">{isInstalling ? "正在安裝依賴" : "正在啟動 MathFormer"}</div>
+            <div className="setup-title">{isInstalling ? "Installing Dependencies" : "Starting MathFormer"}</div>
             <div className="setup-desc">
               {isInstalling
-                ? "正在下載並安裝 MathFormer 神經網路引擎，請稍候..."
-                : "正在初始化神經網路引擎並驗證計算能力..."}
+                ? "Downloading and installing MathFormer neural network engine, please wait..."
+                : "Initializing neural network engine and verifying calculation capability..."}
             </div>
 
             <div className="setup-progress">
