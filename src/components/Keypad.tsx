@@ -99,7 +99,11 @@ function Keypad({
         disabled={isLoading && config.type !== 'function'}
         aria-label={config.label}
       >
-        {config.label}
+        {/* Liquid Glass Layers */}
+        <div className="glass-filter-btn"></div>
+        <div className="glass-overlay"></div>
+        <div className="glass-specular"></div>
+        <span className="glass-content">{config.label}</span>
       </button>
     );
   };
