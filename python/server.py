@@ -30,9 +30,9 @@ class CalculatorHandler(BaseHTTPRequestHandler):
                 return
 
             try:
-                num_a = int(float(a))
-                num_b = int(float(b))
-            except ValueError:
+                num_a = float(a) if '.' in str(a) else int(a)
+                num_b = float(b) if '.' in str(b) else int(b)
+            except (ValueError, TypeError):
                 self._send_response(400, {'error': 'Invalid numbers'})
                 return
 

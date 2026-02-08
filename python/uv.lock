@@ -587,7 +587,7 @@ wheels = [
 
 [[package]]
 name = "mathformer"
-version = "1.0.3"
+version = "1.1.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "safetensors", version = "0.5.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
@@ -601,9 +601,9 @@ dependencies = [
     { name = "transformers", version = "4.57.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.9.*'" },
     { name = "transformers", version = "5.1.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/b8/40/1f16fe2f58362f9c2f823e96c4f5c87d228c13a266e356b283a539c92f4a/mathformer-1.0.3.tar.gz", hash = "sha256:6c865a585d012108998a6c8cc1e06212af3ccc3d72da6d47db56f5bb5cef0477", size = 7899775, upload-time = "2026-02-04T09:15:15.006Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/13/7c/8f08644fca890e3c33675daa4f76fcdea82b404d8d1ede87b053e3fbc918/mathformer-1.1.0.tar.gz", hash = "sha256:7359e926c579c234f33d496deaf784640b36c42fdaa5fecf6da9f2654078f4f5", size = 7907101, upload-time = "2026-02-08T19:26:43.678Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/d3/39/63f6f70436e6fc9f4f064d35b5942fa39571503cdd338725775f4bbfd6fd/mathformer-1.0.3-py3-none-any.whl", hash = "sha256:a814ca2db7c9fcbce120f7a30e0ec0f1b56bc62047b7abb7a2ef1264a06f00e5", size = 7899870, upload-time = "2026-02-04T09:15:09.031Z" },
+    { url = "https://files.pythonhosted.org/packages/81/10/1a7c4fb03c6c8c900367c943dd9bbe383c46cd58189736bc66152b24dba5/mathformer-1.1.0-py3-none-any.whl", hash = "sha256:e35854df2705ac2ca8a7ccfec32742911cd5e9a2638bb4b0b833cff4f2595bf4", size = 7905751, upload-time = "2026-02-08T19:26:35.518Z" },
 ]
 
 [[package]]

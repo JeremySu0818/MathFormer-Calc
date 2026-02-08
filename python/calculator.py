@@ -7,19 +7,16 @@ def calculate(operation: str, a: str, b: str) -> str:
         num_a = float(a) if '.' in a else int(a)
         num_b = float(b) if '.' in b else int(b)
         
-        int_a = int(num_a)
-        int_b = int(num_b)
-        
         if operation == 'add':
-            result = mathformer.add(int_a, int_b)
+            result = mathformer.add(num_a, num_b)
         elif operation == 'sub':
-            result = mathformer.sub(int_a, int_b)
+            result = mathformer.sub(num_a, num_b)
         elif operation == 'mul':
-            result = mathformer.mul(int_a, int_b)
+            result = mathformer.mul(num_a, num_b)
         elif operation == 'div':
-            if int_b == 0:
+            if num_b == 0:
                 return "Error: Division by zero"
-            result = mathformer.div(int_a, int_b)
+            result = mathformer.div(num_a, num_b)
         else:
             return f"Error: Unknown operation '{operation}'"
         
