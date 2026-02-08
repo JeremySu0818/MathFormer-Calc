@@ -90,7 +90,7 @@ function startPythonBackend(onReady?: () => void): void {
 
   pythonProcess = spawn(pythonExecutable, pythonArgs, {
     cwd: backendDir,
-    shell: true,  // Always use shell on Windows for proper path resolution
+    shell: true,
     env,
   });
 

@@ -47,7 +47,6 @@
   --transition-normal: 0.25s ease;
   --transition-slow: 0.4s ease;
 
-  /* Liquid Glass Variables */
   --lg-bg-color: rgba(255, 255, 255, 0.25);
   --lg-highlight: rgba(255, 255, 255, 0.75);
   --lg-text: #ffffff;
@@ -106,7 +105,6 @@ body {
   backdrop-filter: blur(2px);
 }
 
-/* ========== LIQUID GLASS BASE LAYERS (via pseudo-elements) ========== */
 .glass-content {
   position: relative;
   z-index: 3;
@@ -114,7 +112,6 @@ body {
   align-items: center;
 }
 
-/* ========== TITLE BAR ========== */
 .title-bar {
   display: flex;
   align-items: center;
@@ -152,7 +149,6 @@ body {
   -webkit-app-region: no-drag;
 }
 
-/* Title Bar Buttons - Liquid Glass Circle */
 .title-bar-btn {
   width: 14px;
   height: 14px;
@@ -182,7 +178,6 @@ body {
   background: linear-gradient(135deg, rgba(255, 130, 120, 0.9), rgba(255, 80, 70, 0.7));
 }
 
-/* ========== CALCULATOR ========== */
 .calculator {
   flex: 1;
   display: flex;
@@ -195,7 +190,6 @@ body {
   animation: fadeIn 0.4s ease-out;
 }
 
-/* ========== DISPLAY - LIQUID GLASS CARD ========== */
 .display {
   position: relative;
   border-radius: 2rem;
@@ -316,7 +310,6 @@ body {
   z-index: 4;
 }
 
-/* ========== KEYPAD ========== */
 .keypad {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -408,7 +401,6 @@ body {
   grid-area: eq;
 }
 
-/* ========== BUTTONS - LIQUID GLASS CIRCLE ========== */
 .btn {
   display: flex;
   align-items: center;
@@ -459,7 +451,6 @@ body {
   isolation: isolate;
 }
 
-/* Oval buttons for wide spans (0 key) */
 .btn-area-n0.btn {
   border-radius: 3rem;
   aspect-ratio: auto;
@@ -468,7 +459,6 @@ body {
   max-width: 100%;
 }
 
-/* Equals button spans 2 rows, make it pill shape */
 .btn-area-eq.btn {
   border-radius: 3rem;
   aspect-ratio: auto;
@@ -501,7 +491,6 @@ body {
   transform: scale(0.95);
 }
 
-/* Number buttons styling */
 .btn-number::before {
   background-color: rgba(255, 255, 255, 0.12);
 }
@@ -510,7 +499,6 @@ body {
   background-color: rgba(255, 255, 255, 0.22);
 }
 
-/* Operator buttons styling */
 .btn-operator {
   font-size: 24px;
 }
@@ -532,7 +520,6 @@ body {
     0 0 30px rgba(100, 180, 255, 0.3);
 }
 
-/* Function buttons styling */
 .btn-function {
   font-size: 16px;
   font-weight: 600;
@@ -546,7 +533,6 @@ body {
   background-color: rgba(255, 255, 255, 0.18);
 }
 
-/* Equals button styling */
 .btn-equals {
   font-size: 28px;
   font-weight: 600;
@@ -565,7 +551,6 @@ body {
     0 0 30px rgba(80, 200, 220, 0.35);
 }
 
-/* ========== STATUS BAR ========== */
 .status-bar {
   display: flex;
   align-items: center;
@@ -619,7 +604,6 @@ body {
   margin-top: var(--spacing-xs);
 }
 
-/* ========== SETUP OVERLAY - LIQUID GLASS CARD ========== */
 .setup-overlay {
   position: absolute;
   inset: 0;
@@ -696,7 +680,6 @@ body {
   line-height: 1.6;
 }
 
-/* Setup Button - Liquid Glass Circle */
 .setup-btn {
   position: relative;
   z-index: 4;
@@ -812,7 +795,6 @@ body {
   }
 }
 
-/* Button ripple effect */
 .btn-ripple {
   position: absolute;
   border-radius: 50%;
@@ -830,7 +812,6 @@ body {
   }
 }
 
-/* ========== RESPONSIVE ========== */
 @media (max-height: 600px) {
   .display {
     min-height: 100px;
