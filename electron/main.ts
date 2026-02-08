@@ -90,7 +90,6 @@ function startPythonBackend(onReady?: () => void): void {
 
   pythonProcess = spawn(pythonExecutable, pythonArgs, {
     cwd: backendDir,
-    shell: !isDev,
     env,
   });
 
@@ -274,24 +273,59 @@ app.whenReady().then(async () => {
   });
 });
 
-function killPythonProcess() {
-  if (pythonProcess) {
-    console.log("Terminating Python backend...");
-    if (!isDev && process.platform === "win32" && pythonProcess.pid) {
-      spawn("taskkill", ["/pid", pythonProcess.pid.toString(), "/f", "/t"]);
+function killPythonProcess(): Promise<void> {
+  return new Promise((resolve) => {
+    if (pythonProcess && pythonProcess.pid) {
+      console.log(`Terminating Python backend (PID: ${pythonProcess.pid})...`);
+
+      if (isDev) {
+        pythonProcess.kill();
+        pythonProcess = null;
+        resolve();
+      } else if (process.platform === "win32") {
+        const killProc = spawn("taskkill", ["/pid", pythonProcess.pid.toString(), "/f", "/t"], {
+          shell: true,
+          windowsHide: true,
+        });
+
+        killProc.on("close", (code) => {
+          console.log(`taskkill exited with code ${code}`);
+          pythonProcess = null;
+          resolve();
+        });
+
+        killProc.on("error", (err) => {
+          console.error("Failed to kill python process:", err);
+          try {
+            pythonProcess?.kill("SIGKILL");
+          } catch (e) {
+            console.error("Backup kill also failed:", e);
+          }
+          pythonProcess = null;
+          resolve();
+        });
+      } else {
+        pythonProcess.kill("SIGTERM");
+        pythonProcess = null;
+        resolve();
+      }
     } else {
-      pythonProcess.kill();
+      resolve();
     }
-    pythonProcess = null;
-  }
+  });
 }
 
-app.on("before-quit", () => {
-  killPythonProcess();
+
+app.on("before-quit", (event) => {
+  if (pythonProcess) {
+    event.preventDefault();
+    killPythonProcess().then(() => {
+      app.quit();
+    });
+  }
 });
 
 app.on("window-all-closed", () => {
-  killPythonProcess();
   if (process.platform !== "darwin") {
     app.quit();
   }
