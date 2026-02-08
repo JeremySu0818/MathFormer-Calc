@@ -4,7 +4,8 @@
   "description": "A GUI calculator utilizing mathformer's four models for basic arithmetic and digit-based algorithms for addition, subtraction, multiplication, and division",
   "main": "dist/main.js",
   "scripts": {
-    "dev": "concurrently \"vite --host\" \"wait-on http://localhost:5173 && tsc -p electron/tsconfig.json && electron .\"",
+    "dev": "concurrently \"vite\" \"wait-on http://localhost:5173 && tsc -p electron/tsconfig.json && electron .\"",
+    "dev:ui": "vite --host",
     "package": "npm run build && electron-builder build --publish never",
     "build": "tsc -p electron/tsconfig.json && vite build",
     "build:electron": "tsc -p electron/tsconfig.json"

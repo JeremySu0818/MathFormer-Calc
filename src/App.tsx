@@ -315,7 +315,7 @@ function App() {
         </div>
       </div>
 
-      {!isBackendReady && (
+      {!isBackendReady && window.electronAPI && (
         <div className="setup-overlay">
           <div className="setup-card">
             <div className="setup-title">{isInstalling ? "Installing Dependencies" : "Starting MathFormer"}</div>
