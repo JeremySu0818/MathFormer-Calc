@@ -89,6 +89,19 @@ def run(port=0):
     httpd = ThreadingHTTPServer(server_address, CalculatorHandler)
     port = httpd.server_port
     print(f"PORT:{port}", flush=True)
+
+    def watchdog():
+        try:
+            sys.stdin.read()
+        except EOFError:
+            pass
+        finally:
+            print("Parent process closed stdin, exiting...", flush=True)
+            import os
+            os._exit(0)
+
+    threading.Thread(target=watchdog, daemon=True).start()
+
     httpd.serve_forever()
 
 if __name__ == '__main__':

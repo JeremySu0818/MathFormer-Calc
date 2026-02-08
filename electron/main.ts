@@ -90,7 +90,7 @@ function startPythonBackend(onReady?: () => void): void {
 
   pythonProcess = spawn(pythonExecutable, pythonArgs, {
     cwd: backendDir,
-    shell: true,
+    shell: !isDev,
     env,
   });
 
@@ -248,7 +248,12 @@ ipcMain.on("window-minimize", () => {
 });
 
 ipcMain.on("window-close", () => {
-  mainWindow?.close();
+  if (mainWindow) {
+    mainWindow.close();
+  }
+  if (process.platform !== "darwin") {
+    app.quit();
+  }
 });
 
 app.whenReady().then(async () => {
@@ -269,10 +274,24 @@ app.whenReady().then(async () => {
   });
 });
 
-app.on("window-all-closed", () => {
+function killPythonProcess() {
   if (pythonProcess) {
-    pythonProcess.kill();
+    console.log("Terminating Python backend...");
+    if (!isDev && process.platform === "win32" && pythonProcess.pid) {
+      spawn("taskkill", ["/pid", pythonProcess.pid.toString(), "/f", "/t"]);
+    } else {
+      pythonProcess.kill();
+    }
+    pythonProcess = null;
   }
+}
+
+app.on("before-quit", () => {
+  killPythonProcess();
+});
+
+app.on("window-all-closed", () => {
+  killPythonProcess();
   if (process.platform !== "darwin") {
     app.quit();
   }
