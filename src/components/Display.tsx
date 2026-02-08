@@ -28,13 +28,6 @@ function Display({ value, expression, isLoading, error }: DisplayProps) {
 
   return (
     <div className="display">
-      {/* Liquid Glass Layers */}
-      <div className="glass-filter"></div>
-      <div className="glass-overlay"></div>
-      <div className="glass-specular"></div>
-
-      <span className="display-status">Neural Engine</span>
-
       <div className="display-expression">
         {expression}
       </div>

@@ -90,7 +90,7 @@ function startPythonBackend(onReady?: () => void): void {
 
   pythonProcess = spawn(pythonExecutable, pythonArgs, {
     cwd: backendDir,
-    shell: isDev,
+    shell: true,  // Always use shell on Windows for proper path resolution
     env,
   });
 
@@ -208,7 +208,7 @@ ipcMain.handle("install-backend", async () => {
 
   return new Promise<void>((resolve, reject) => {
     log("Creating virtual environment...");
-    const venvProc = spawn(uvExecutable, ["venv", envPath], { shell: isDev });
+    const venvProc = spawn(uvExecutable, ["venv", envPath], { shell: true });
 
     venvProc.stdout?.on("data", (data) => log(data.toString()));
     venvProc.stderr?.on("data", (data) => log(data.toString()));
@@ -225,7 +225,7 @@ ipcMain.handle("install-backend", async () => {
         "--extra-index-url", "https://pypi.org/simple",
         "--python", pythonBin
       ];
-      const installProc = spawn(uvExecutable, installArgs, { shell: isDev });
+      const installProc = spawn(uvExecutable, installArgs, { shell: true });
 
       installProc.stdout?.on("data", (data) => log(data.toString()));
       installProc.stderr?.on("data", (data) => log(data.toString()));

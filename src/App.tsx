@@ -27,8 +27,7 @@ const initialState: CalculatorState = {
 
 function App() {
   const [state, setState] = useState<CalculatorState>(initialState);
-  // TEMPORARY: Set to true for UI testing, revert to false when done
-  const [isBackendReady, setIsBackendReady] = useState<boolean>(true);
+  const [isBackendReady, setIsBackendReady] = useState<boolean>(false);
   const [isInstalling, setIsInstalling] = useState<boolean>(false);
   const [installLogs, setInstallLogs] = useState<string[]>([]);
 
@@ -319,11 +318,6 @@ function App() {
       {!isBackendReady && (
         <div className="setup-overlay">
           <div className="setup-card">
-            {/* Liquid Glass Layers */}
-            <div className="glass-filter"></div>
-            <div className="glass-overlay"></div>
-            <div className="glass-specular"></div>
-
             <div className="setup-title">{isInstalling ? "Installing Dependencies" : "Starting MathFormer"}</div>
             <div className="setup-desc">
               {isInstalling

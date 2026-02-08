@@ -106,42 +106,7 @@ body {
   backdrop-filter: blur(2px);
 }
 
-/* ========== LIQUID GLASS BASE LAYERS ========== */
-.glass-filter {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  backdrop-filter: blur(0px);
-  filter: url(#lg-dist);
-  isolation: isolate;
-}
-
-.glass-filter-btn {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  backdrop-filter: blur(0px);
-  filter: url(#lg-dist-btn);
-  isolation: isolate;
-}
-
-.glass-overlay {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  background: var(--lg-bg-color);
-}
-
-.glass-specular {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  border-radius: inherit;
-  overflow: hidden;
-  box-shadow: inset 1px 1px 0 var(--lg-highlight),
-    inset 0 0 5px var(--lg-highlight);
-}
-
+/* ========== LIQUID GLASS BASE LAYERS (via pseudo-elements) ========== */
 .glass-content {
   position: relative;
   z-index: 3;
@@ -245,8 +210,27 @@ body {
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 2.2);
 }
 
-.display>.glass-overlay {
-  background: rgba(255, 255, 255, 0.15);
+.display::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  border-radius: 2rem;
+  box-shadow: inset 2px 2px 0px -2px rgba(255, 255, 255, 0.7), inset 0 0 3px 1px rgba(255, 255, 255, 0.7);
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.display::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  border-radius: 2rem;
+  backdrop-filter: blur(0px);
+  filter: url(#container-glass);
+  overflow: hidden;
+  isolation: isolate;
 }
 
 .display-expression {
@@ -449,6 +433,30 @@ body {
   max-height: 65px;
   place-self: center;
   box-shadow: 0 6px 6px rgba(0, 0, 0, 0.2), 0 0 20px rgba(0, 0, 0, 0.1);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  border-radius: inherit;
+  box-shadow: inset 2px 2px 0px -2px rgba(255, 255, 255, 0.7), inset 0 0 3px 1px rgba(255, 255, 255, 0.7);
+  background-color: rgba(255, 255, 255, 0.18);
+}
+
+.btn::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  border-radius: inherit;
+  backdrop-filter: blur(0px);
+  filter: url(#btn-glass);
+  overflow: hidden;
+  isolation: isolate;
 }
 
 /* Oval buttons for wide spans (0 key) */
@@ -469,20 +477,6 @@ body {
   max-height: 100%;
 }
 
-/* Glass layers for buttons */
-.btn>.glass-filter-btn {
-  border-radius: inherit;
-}
-
-.btn>.glass-overlay {
-  border-radius: inherit;
-  background: rgba(255, 255, 255, 0.18);
-}
-
-.btn>.glass-specular {
-  border-radius: inherit;
-}
-
 .btn>.glass-content {
   position: relative;
   z-index: 3;
@@ -491,7 +485,6 @@ body {
   justify-content: center;
   width: 100%;
   height: 100%;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
 .btn:hover {
@@ -500,8 +493,8 @@ body {
     0 0 30px rgba(255, 255, 255, 0.15);
 }
 
-.btn:hover>.glass-overlay {
-  background: rgba(255, 255, 255, 0.28);
+.btn:hover::before {
+  background-color: rgba(255, 255, 255, 0.28);
 }
 
 .btn:active {
@@ -509,12 +502,12 @@ body {
 }
 
 /* Number buttons styling */
-.btn-number>.glass-overlay {
-  background: rgba(255, 255, 255, 0.12);
+.btn-number::before {
+  background-color: rgba(255, 255, 255, 0.12);
 }
 
-.btn-number:hover>.glass-overlay {
-  background: rgba(255, 255, 255, 0.22);
+.btn-number:hover::before {
+  background-color: rgba(255, 255, 255, 0.22);
 }
 
 /* Operator buttons styling */
@@ -522,16 +515,16 @@ body {
   font-size: 24px;
 }
 
-.btn-operator>.glass-overlay {
-  background: rgba(100, 160, 220, 0.25);
+.btn-operator::before {
+  background-color: rgba(100, 160, 220, 0.25);
 }
 
-.btn-operator:hover>.glass-overlay {
-  background: rgba(100, 160, 220, 0.38);
+.btn-operator:hover::before {
+  background-color: rgba(100, 160, 220, 0.38);
 }
 
-.btn-operator.active>.glass-overlay {
-  background: rgba(100, 180, 255, 0.45);
+.btn-operator.active::before {
+  background-color: rgba(100, 180, 255, 0.45);
 }
 
 .btn-operator.active {
@@ -545,12 +538,12 @@ body {
   font-weight: 600;
 }
 
-.btn-function>.glass-overlay {
-  background: rgba(255, 255, 255, 0.08);
+.btn-function::before {
+  background-color: rgba(255, 255, 255, 0.08);
 }
 
-.btn-function:hover>.glass-overlay {
-  background: rgba(255, 255, 255, 0.18);
+.btn-function:hover::before {
+  background-color: rgba(255, 255, 255, 0.18);
 }
 
 /* Equals button styling */
@@ -559,12 +552,12 @@ body {
   font-weight: 600;
 }
 
-.btn-equals>.glass-overlay {
-  background: rgba(80, 200, 220, 0.35);
+.btn-equals::before {
+  background-color: rgba(80, 200, 220, 0.35);
 }
 
-.btn-equals:hover>.glass-overlay {
-  background: rgba(80, 200, 220, 0.5);
+.btn-equals:hover::before {
+  background-color: rgba(80, 200, 220, 0.5);
 }
 
 .btn-equals:hover {
@@ -653,8 +646,27 @@ body {
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 2.2);
 }
 
-.setup-card>.glass-overlay {
-  background: rgba(255, 255, 255, 0.15);
+.setup-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  border-radius: 2rem;
+  box-shadow: inset 2px 2px 0px -2px rgba(255, 255, 255, 0.7), inset 0 0 3px 1px rgba(255, 255, 255, 0.7);
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.setup-card::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  border-radius: 2rem;
+  backdrop-filter: blur(0px);
+  filter: url(#container-glass);
+  overflow: hidden;
+  isolation: isolate;
 }
 
 .setup-icon {
@@ -702,8 +714,27 @@ body {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.setup-btn>.glass-overlay {
-  background: rgba(80, 200, 220, 0.35);
+.setup-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  border-radius: 2rem;
+  box-shadow: inset 2px 2px 0px -2px rgba(255, 255, 255, 0.7), inset 0 0 3px 1px rgba(255, 255, 255, 0.7);
+  background-color: rgba(80, 200, 220, 0.35);
+}
+
+.setup-btn::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  border-radius: 2rem;
+  backdrop-filter: blur(0px);
+  filter: url(#btn-glass);
+  overflow: hidden;
+  isolation: isolate;
 }
 
 .setup-btn:hover:not(:disabled) {
@@ -712,8 +743,8 @@ body {
     0 0 20px rgba(80, 200, 220, 0.25);
 }
 
-.setup-btn:hover:not(:disabled)>.glass-overlay {
-  background: rgba(80, 200, 220, 0.5);
+.setup-btn:hover:not(:disabled)::before {
+  background-color: rgba(80, 200, 220, 0.5);
 }
 
 .setup-btn:disabled {
