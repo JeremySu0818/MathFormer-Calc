@@ -1,30 +1,9 @@
 import sys
-import os
 import json
 import threading
-import importlib
+import mathformer
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from socketserver import ThreadingMixIn
-
-_BACKEND = None
-_BACKEND_NAME = "lite"
-
-def _load_backend():
-    global _BACKEND, _BACKEND_NAME
-    backend_mode = os.environ.get("MATHFORMER_BACKEND", "").strip().lower()
-    if backend_mode in {"lite", "builtin", "pure", "none"}:
-        _BACKEND = None
-        _BACKEND_NAME = "lite"
-        return
-
-    try:
-        _BACKEND = importlib.import_module("mathformer")
-        _BACKEND_NAME = "mathformer"
-    except Exception:
-        _BACKEND = None
-        _BACKEND_NAME = "lite"
-
-_load_backend()
 
 class ThreadingHTTPServer(ThreadingMixIn, HTTPServer):
     daemon_threads = True
@@ -59,16 +38,16 @@ class CalculatorHandler(BaseHTTPRequestHandler):
 
             result = None
             if operation == 'add':
-                result = _BACKEND.add(num_a, num_b) if _BACKEND else (num_a + num_b)
+                result = mathformer.add(num_a, num_b)
             elif operation == 'sub':
-                result = _BACKEND.sub(num_a, num_b) if _BACKEND else (num_a - num_b)
+                result = mathformer.sub(num_a, num_b)
             elif operation == 'mul':
-                result = _BACKEND.mul(num_a, num_b) if _BACKEND else (num_a * num_b)
+                result = mathformer.mul(num_a, num_b)
             elif operation == 'div':
                 if num_b == 0:
                      self._send_response(400, {'error': 'Division by zero'})
                      return
-                result = _BACKEND.div(num_a, num_b) if _BACKEND else (num_a / num_b)
+                result = mathformer.div(num_a, num_b)
             else:
                 self._send_response(400, {'error': f'Unknown operation {operation}'})
                 return
