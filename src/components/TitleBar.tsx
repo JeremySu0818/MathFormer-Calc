@@ -15,19 +15,7 @@ function TitleBar(_props: TitleBarProps) {
 
   return (
     <div className="title-bar">
-      <div className="title-bar-title">
-        <svg
-          className="title-bar-icon"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.5"
-        >
-          <circle cx="12" cy="12" r="10" />
-          <path d="M12 6v12M6 12h12" />
-        </svg>
-        <span className="title-bar-text">MathFormer</span>
-      </div>
+      <div className="title-bar-title"></div>
 
       <div className="title-bar-controls">
         <button
