@@ -85,8 +85,6 @@ function App() {
 
       const newValue = prev.displayValue === '0' ? digit : prev.displayValue + digit;
 
-      if (newValue.length > 15) return prev;
-
       return {
         ...prev,
         displayValue: newValue,
