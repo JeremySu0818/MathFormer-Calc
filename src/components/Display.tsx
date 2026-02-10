@@ -32,17 +32,13 @@ function Display({ value, expression, isLoading, error }: DisplayProps) {
         {expression}
       </div>
 
-      <div className="display-value">
-        {formatValue(value)}
+      <div
+        key={isLoading ? 'computing' : 'value'}
+        className={`display-value ${isLoading ? 'computing' : ''}`}
+        style={{ animation: 'fadeInText 0.4s ease-out' }}
+      >
+        {isLoading ? 'Computing...' : formatValue(value)}
       </div>
-
-      {isLoading && (
-        <div className="display-loading">
-          <span className="display-loading-dot" />
-          <span className="display-loading-dot" />
-          <span className="display-loading-dot" />
-        </div>
-      )}
 
       {error && (
         <div className="error-message">
