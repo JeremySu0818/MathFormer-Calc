@@ -5,7 +5,7 @@ description = "Calculator backend using MathFormer neural network"
 readme = "README.md"
 requires-python = ">=3.8"
 dependencies = [
-    "mathformer",
+    "mathformer==1.2.0",
     "torch",
 ]
 
