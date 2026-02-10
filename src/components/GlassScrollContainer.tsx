@@ -27,6 +27,7 @@ function GlassScrollContainer({
     const trackRef = useRef<HTMLDivElement>(null);
     const thumbRef = useRef<HTMLDivElement>(null);
     const rafRef = useRef<number | null>(null);
+    const thumbSizeRef = useRef(0);
 
     const [isOverflowing, setIsOverflowing] = useState(false);
     const [thumbSize, setThumbSize] = useState(0);
@@ -36,6 +37,10 @@ function GlassScrollContainer({
     const dragStartRef = useRef({ pointerPos: 0, scrollPos: 0 });
 
     const isHorizontal = direction === 'horizontal';
+
+    useEffect(() => {
+        thumbSizeRef.current = thumbSize;
+    }, [thumbSize]);
 
     const checkOverflow = useCallback(() => {
         const el = scrollRef.current;
@@ -61,6 +66,7 @@ function GlassScrollContainer({
         const ratio = clientTotal / scrollTotal;
         const newThumbSize = Math.max(ratio * trackTotal, 24);
         setThumbSize(newThumbSize);
+        thumbSizeRef.current = newThumbSize;
 
         const scrollPos = isHorizontal ? el.scrollLeft : el.scrollTop;
         const maxScroll = scrollTotal - clientTotal;
@@ -96,15 +102,36 @@ function GlassScrollContainer({
     useEffect(() => {
         if (!autoScrollToEnd || !scrollRef.current) return;
         const el = scrollRef.current;
-        if (isHorizontal) {
-            el.scrollLeft = el.scrollWidth;
-        } else {
-            el.scrollTop = el.scrollHeight;
-        }
-        requestAnimationFrame(() => {
+
+        const scrollToEndAndMeasure = () => {
+            if (isHorizontal) {
+                el.scrollLeft = el.scrollWidth;
+            } else {
+                el.scrollTop = el.scrollHeight;
+            }
             checkOverflow();
             measureThumb();
+        };
+
+        scrollToEndAndMeasure();
+
+        const raf1 = requestAnimationFrame(() => {
+            scrollToEndAndMeasure();
+            const raf2 = requestAnimationFrame(() => {
+                scrollToEndAndMeasure();
+            });
+            rafCleanup.push(raf2);
         });
+        const rafCleanup: number[] = [raf1];
+
+        const timer = setTimeout(() => {
+            scrollToEndAndMeasure();
+        }, 50);
+
+        return () => {
+            rafCleanup.forEach(id => cancelAnimationFrame(id));
+            clearTimeout(timer);
+        };
     }, [children, autoScrollToEnd, isHorizontal, checkOverflow, measureThumb]);
 
     useEffect(() => {
@@ -123,7 +150,8 @@ function GlassScrollContainer({
                 const maxScroll = scrollTotal - clientTotal;
                 const scrollPos = isHorizontal ? el.scrollLeft : el.scrollTop;
                 const scrollRatio = maxScroll > 0 ? scrollPos / maxScroll : 0;
-                const maxThumbPos = trackTotal - thumbSize;
+                const currentThumbSize = thumbSizeRef.current;
+                const maxThumbPos = trackTotal - currentThumbSize;
                 setThumbPos(scrollRatio * maxThumbPos);
             });
         };
@@ -133,7 +161,7 @@ function GlassScrollContainer({
             el.removeEventListener('scroll', handleScroll);
             if (rafRef.current) cancelAnimationFrame(rafRef.current);
         };
-    }, [isHorizontal, thumbSize]);
+    }, [isHorizontal]);
 
     const handleThumbPointerDown = useCallback((e: React.PointerEvent) => {
         e.preventDefault();
