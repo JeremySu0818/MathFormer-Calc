@@ -1,21 +1,15 @@
 import { useRef, useEffect, useState, useCallback, type ReactNode, type CSSProperties } from 'react';
 
-type ScrollDirection = 'horizontal' | 'vertical';
+type ScrollDirection = 'horizontal' | 'vertical' | 'both';
 
 interface GlassScrollContainerProps {
     children: ReactNode;
     direction?: ScrollDirection;
     className?: string;
     style?: CSSProperties;
-    /** Auto-scroll to end when content changes */
     autoScrollToEnd?: boolean;
 }
 
-/**
- * A reusable liquid-glass scrollbar container with refraction effect.
- * Supports both horizontal and vertical directions.
- * The scrollbar only appears when content overflows.
- */
 function GlassScrollContainer({
     children,
     direction = 'horizontal',
@@ -24,56 +18,82 @@ function GlassScrollContainer({
     autoScrollToEnd = false,
 }: GlassScrollContainerProps) {
     const scrollRef = useRef<HTMLDivElement>(null);
-    const trackRef = useRef<HTMLDivElement>(null);
-    const thumbRef = useRef<HTMLDivElement>(null);
+    const trackRefV = useRef<HTMLDivElement>(null);
+    const thumbRefV = useRef<HTMLDivElement>(null);
+    const trackRefH = useRef<HTMLDivElement>(null);
+    const thumbRefH = useRef<HTMLDivElement>(null);
     const rafRef = useRef<number | null>(null);
-    const thumbSizeRef = useRef(0);
 
-    const [isOverflowing, setIsOverflowing] = useState(false);
-    const [thumbSize, setThumbSize] = useState(0);
-    const [thumbPos, setThumbPos] = useState(0);
-    const [isDragging, setIsDragging] = useState(false);
+    const [isOverflowingV, setIsOverflowingV] = useState(false);
+    const [isOverflowingH, setIsOverflowingH] = useState(false);
+    const [thumbSizeV, setThumbSizeV] = useState(0);
+    const [thumbSizeH, setThumbSizeH] = useState(0);
+    const [thumbPosV, setThumbPosV] = useState(0);
+    const [thumbPosH, setThumbPosH] = useState(0);
+    const [isDraggingV, setIsDraggingV] = useState(false);
+    const [isDraggingH, setIsDraggingH] = useState(false);
     const [isHovering, setIsHovering] = useState(false);
-    const dragStartRef = useRef({ pointerPos: 0, scrollPos: 0 });
 
-    const isHorizontal = direction === 'horizontal';
+    const dragStartRefV = useRef({ pointerPos: 0, scrollPos: 0 });
+    const dragStartRefH = useRef({ pointerPos: 0, scrollPos: 0 });
 
-    useEffect(() => {
-        thumbSizeRef.current = thumbSize;
-    }, [thumbSize]);
+    const showVertical = direction === 'vertical' || direction === 'both';
+    const showHorizontal = direction === 'horizontal' || direction === 'both';
 
     const checkOverflow = useCallback(() => {
         const el = scrollRef.current;
         if (!el) return;
 
-        const scrollTotal = isHorizontal ? el.scrollWidth : el.scrollHeight;
-        const clientTotal = isHorizontal ? el.clientWidth : el.clientHeight;
-        const overflows = scrollTotal > clientTotal + 1;
-        setIsOverflowing(overflows);
-    }, [isHorizontal]);
+        if (showVertical) {
+            setIsOverflowingV(el.scrollHeight > el.clientHeight + 1);
+        }
+        if (showHorizontal) {
+            setIsOverflowingH(el.scrollWidth > el.clientWidth + 1);
+        }
+    }, [showVertical, showHorizontal]);
 
     const measureThumb = useCallback(() => {
         const el = scrollRef.current;
-        const track = trackRef.current;
-        if (!el || !track) return;
+        if (!el) return;
 
-        const scrollTotal = isHorizontal ? el.scrollWidth : el.scrollHeight;
-        const clientTotal = isHorizontal ? el.clientWidth : el.clientHeight;
-        const trackTotal = isHorizontal ? track.clientWidth : track.clientHeight;
+        if (showVertical && trackRefV.current) {
+            const track = trackRefV.current;
+            const scrollTotal = el.scrollHeight;
+            const clientTotal = el.clientHeight;
+            const trackTotal = track.clientHeight;
 
-        if (scrollTotal <= clientTotal) return;
+            if (scrollTotal > clientTotal) {
+                const ratio = clientTotal / scrollTotal;
+                const newThumbSize = Math.max(ratio * trackTotal, 24);
+                setThumbSizeV(newThumbSize);
 
-        const ratio = clientTotal / scrollTotal;
-        const newThumbSize = Math.max(ratio * trackTotal, 24);
-        setThumbSize(newThumbSize);
-        thumbSizeRef.current = newThumbSize;
+                const scrollPos = el.scrollTop;
+                const maxScroll = scrollTotal - clientTotal;
+                const scrollRatio = maxScroll > 0 ? scrollPos / maxScroll : 0;
+                const maxThumbPos = trackTotal - newThumbSize;
+                setThumbPosV(scrollRatio * maxThumbPos);
+            }
+        }
 
-        const scrollPos = isHorizontal ? el.scrollLeft : el.scrollTop;
-        const maxScroll = scrollTotal - clientTotal;
-        const scrollRatio = maxScroll > 0 ? scrollPos / maxScroll : 0;
-        const maxThumbPos = trackTotal - newThumbSize;
-        setThumbPos(scrollRatio * maxThumbPos);
-    }, [isHorizontal]);
+        if (showHorizontal && trackRefH.current) {
+            const track = trackRefH.current;
+            const scrollTotal = el.scrollWidth;
+            const clientTotal = el.clientWidth;
+            const trackTotal = track.clientWidth;
+
+            if (scrollTotal > clientTotal) {
+                const ratio = clientTotal / scrollTotal;
+                const newThumbSize = Math.max(ratio * trackTotal, 24);
+                setThumbSizeH(newThumbSize);
+
+                const scrollPos = el.scrollLeft;
+                const maxScroll = scrollTotal - clientTotal;
+                const scrollRatio = maxScroll > 0 ? scrollPos / maxScroll : 0;
+                const maxThumbPos = trackTotal - newThumbSize;
+                setThumbPosH(scrollRatio * maxThumbPos);
+            }
+        }
+    }, [showVertical, showHorizontal]);
 
     useEffect(() => {
         const el = scrollRef.current;
@@ -81,58 +101,47 @@ function GlassScrollContainer({
 
         checkOverflow();
 
-        const resizeObs = new ResizeObserver(() => checkOverflow());
+        const resizeObs = new ResizeObserver(() => {
+            checkOverflow();
+            measureThumb();
+        });
         resizeObs.observe(el);
 
-        const mutObs = new MutationObserver(() => checkOverflow());
+        const mutObs = new MutationObserver(() => {
+            checkOverflow();
+            measureThumb();
+        });
         mutObs.observe(el, { childList: true, subtree: true, characterData: true });
 
         return () => {
             resizeObs.disconnect();
             mutObs.disconnect();
         };
-    }, [checkOverflow]);
+    }, [checkOverflow, measureThumb]);
 
     useEffect(() => {
-        if (isOverflowing) {
+        if (isOverflowingV || isOverflowingH) {
             requestAnimationFrame(() => measureThumb());
         }
-    }, [isOverflowing, measureThumb]);
+    }, [isOverflowingV, isOverflowingH, measureThumb]);
 
     useEffect(() => {
         if (!autoScrollToEnd || !scrollRef.current) return;
         const el = scrollRef.current;
 
         const scrollToEndAndMeasure = () => {
-            if (isHorizontal) {
+            if (showVertical) el.scrollTop = el.scrollHeight;
+            if (showHorizontal && direction === 'horizontal') {
                 el.scrollLeft = el.scrollWidth;
-            } else {
-                el.scrollTop = el.scrollHeight;
             }
             checkOverflow();
             measureThumb();
         };
 
         scrollToEndAndMeasure();
-
-        const raf1 = requestAnimationFrame(() => {
-            scrollToEndAndMeasure();
-            const raf2 = requestAnimationFrame(() => {
-                scrollToEndAndMeasure();
-            });
-            rafCleanup.push(raf2);
-        });
-        const rafCleanup: number[] = [raf1];
-
-        const timer = setTimeout(() => {
-            scrollToEndAndMeasure();
-        }, 50);
-
-        return () => {
-            rafCleanup.forEach(id => cancelAnimationFrame(id));
-            clearTimeout(timer);
-        };
-    }, [children, autoScrollToEnd, isHorizontal, checkOverflow, measureThumb]);
+        const timer = setTimeout(scrollToEndAndMeasure, 50);
+        return () => clearTimeout(timer);
+    }, [children, autoScrollToEnd, showVertical, showHorizontal, checkOverflow, measureThumb]);
 
     useEffect(() => {
         const el = scrollRef.current;
@@ -141,18 +150,7 @@ function GlassScrollContainer({
         const handleScroll = () => {
             if (rafRef.current) cancelAnimationFrame(rafRef.current);
             rafRef.current = requestAnimationFrame(() => {
-                const track = trackRef.current;
-                if (!track) return;
-
-                const scrollTotal = isHorizontal ? el.scrollWidth : el.scrollHeight;
-                const clientTotal = isHorizontal ? el.clientWidth : el.clientHeight;
-                const trackTotal = isHorizontal ? track.clientWidth : track.clientHeight;
-                const maxScroll = scrollTotal - clientTotal;
-                const scrollPos = isHorizontal ? el.scrollLeft : el.scrollTop;
-                const scrollRatio = maxScroll > 0 ? scrollPos / maxScroll : 0;
-                const currentThumbSize = thumbSizeRef.current;
-                const maxThumbPos = trackTotal - currentThumbSize;
-                setThumbPos(scrollRatio * maxThumbPos);
+                measureThumb();
             });
         };
 
@@ -161,179 +159,137 @@ function GlassScrollContainer({
             el.removeEventListener('scroll', handleScroll);
             if (rafRef.current) cancelAnimationFrame(rafRef.current);
         };
-    }, [isHorizontal]);
+    }, [measureThumb]);
 
-    const handleThumbPointerDown = useCallback((e: React.PointerEvent) => {
+    const handleThumbPointerDownV = (e: React.PointerEvent) => {
         e.preventDefault();
         e.stopPropagation();
         const el = scrollRef.current;
         if (!el) return;
-
-        setIsDragging(true);
-        dragStartRef.current = {
-            pointerPos: isHorizontal ? e.clientX : e.clientY,
-            scrollPos: isHorizontal ? el.scrollLeft : el.scrollTop,
-        };
-
+        setIsDraggingV(true);
+        dragStartRefV.current = { pointerPos: e.clientY, scrollPos: el.scrollTop };
         (e.target as HTMLElement).setPointerCapture(e.pointerId);
-    }, [isHorizontal]);
-
-    const handleThumbPointerMove = useCallback((e: React.PointerEvent) => {
-        if (!isDragging) return;
-        const el = scrollRef.current;
-        const track = trackRef.current;
-        if (!el || !track) return;
-
-        const pointerDelta = (isHorizontal ? e.clientX : e.clientY) - dragStartRef.current.pointerPos;
-        const trackTotal = isHorizontal ? track.clientWidth : track.clientHeight;
-        const scrollTotal = isHorizontal ? el.scrollWidth : el.scrollHeight;
-        const clientTotal = isHorizontal ? el.clientWidth : el.clientHeight;
-
-        const maxThumbTravel = trackTotal - thumbSize;
-        const maxScroll = scrollTotal - clientTotal;
-        const scrollDelta = maxThumbTravel > 0 ? (pointerDelta / maxThumbTravel) * maxScroll : 0;
-
-        if (isHorizontal) {
-            el.scrollLeft = dragStartRef.current.scrollPos + scrollDelta;
-        } else {
-            el.scrollTop = dragStartRef.current.scrollPos + scrollDelta;
-        }
-    }, [isDragging, isHorizontal, thumbSize]);
-
-    const handleThumbPointerUp = useCallback(() => {
-        setIsDragging(false);
-    }, []);
-
-    const handleTrackClick = useCallback((e: React.MouseEvent) => {
-        const el = scrollRef.current;
-        const track = trackRef.current;
-        if (!el || !track) return;
-
-        if (thumbRef.current && thumbRef.current.contains(e.target as Node)) return;
-
-        const trackRect = track.getBoundingClientRect();
-        const clickPos = isHorizontal
-            ? e.clientX - trackRect.left
-            : e.clientY - trackRect.top;
-        const trackTotal = isHorizontal ? track.clientWidth : track.clientHeight;
-        const scrollTotal = isHorizontal ? el.scrollWidth : el.scrollHeight;
-        const clientTotal = isHorizontal ? el.clientWidth : el.clientHeight;
-
-        const ratio = clickPos / trackTotal;
-        const maxScroll = scrollTotal - clientTotal;
-
-        el.scrollTo({
-            [isHorizontal ? 'left' : 'top']: ratio * maxScroll,
-            behavior: 'smooth',
-        });
-    }, [isHorizontal]);
-
-    const visible = isOverflowing && (isHovering || isDragging);
-
-    const containerStyle: CSSProperties = {
-        position: 'relative',
-        ...style,
     };
 
+    const handleThumbPointerMoveV = (e: React.PointerEvent) => {
+        if (!isDraggingV) return;
+        const el = scrollRef.current;
+        const track = trackRefV.current;
+        if (!el || !track) return;
+
+        const pointerDelta = e.clientY - dragStartRefV.current.pointerPos;
+        const trackTotal = track.clientHeight;
+        const maxThumbTravel = trackTotal - thumbSizeV;
+        const maxScroll = el.scrollHeight - el.clientHeight;
+        const scrollDelta = maxThumbTravel > 0 ? (pointerDelta / maxThumbTravel) * maxScroll : 0;
+        el.scrollTop = dragStartRefV.current.scrollPos + scrollDelta;
+    };
+
+    const handleThumbPointerDownH = (e: React.PointerEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const el = scrollRef.current;
+        if (!el) return;
+        setIsDraggingH(true);
+        dragStartRefH.current = { pointerPos: e.clientX, scrollPos: el.scrollLeft };
+        (e.target as HTMLElement).setPointerCapture(e.pointerId);
+    };
+
+    const handleThumbPointerMoveH = (e: React.PointerEvent) => {
+        if (!isDraggingH) return;
+        const el = scrollRef.current;
+        const track = trackRefH.current;
+        if (!el || !track) return;
+
+        const pointerDelta = e.clientX - dragStartRefH.current.pointerPos;
+        const trackTotal = track.clientWidth;
+        const maxThumbTravel = trackTotal - thumbSizeH;
+        const maxScroll = el.scrollWidth - el.clientWidth;
+        const scrollDelta = maxThumbTravel > 0 ? (pointerDelta / maxThumbTravel) * maxScroll : 0;
+        el.scrollLeft = dragStartRefH.current.scrollPos + scrollDelta;
+    };
+
+    const visibleV = isOverflowingV && (isHovering || isDraggingV);
+    const visibleH = isOverflowingH && (isHovering || isDraggingH);
+
     const scrollAreaStyle: CSSProperties = {
-        overflowX: isHorizontal ? 'scroll' : 'hidden',
-        overflowY: isHorizontal ? 'hidden' : 'scroll',
+        overflowX: showHorizontal ? 'auto' : 'hidden',
+        overflowY: showVertical ? 'auto' : 'hidden',
         scrollbarWidth: 'none' as const,
         width: '100%',
         height: '100%',
     };
 
-    const trackStyle: CSSProperties = isHorizontal
-        ? {
-            position: 'absolute',
-            bottom: 2,
-            left: 8,
-            right: 8,
-            height: 6,
-            borderRadius: 3,
-            zIndex: 10,
-            cursor: 'pointer',
-            opacity: visible ? 1 : 0,
-            transition: 'opacity 0.3s ease',
-            pointerEvents: visible ? 'auto' : 'none',
-        }
-        : {
-            position: 'absolute',
-            right: 2,
-            top: 8,
-            bottom: 8,
-            width: 6,
-            borderRadius: 3,
-            zIndex: 10,
-            cursor: 'pointer',
-            opacity: visible ? 1 : 0,
-            transition: 'opacity 0.3s ease',
-            pointerEvents: visible ? 'auto' : 'none',
-        };
-
-    const thumbStyle: CSSProperties = isHorizontal
-        ? {
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            height: '100%',
-            width: thumbSize,
-            borderRadius: 3,
-            transform: `translateX(${thumbPos}px)`,
-            transition: isDragging ? 'none' : 'transform 0.08s ease-out',
-            cursor: 'grab',
-        }
-        : {
-            position: 'absolute',
-            left: 0,
-            top: 0,
-            width: '100%',
-            height: thumbSize,
-            borderRadius: 3,
-            transform: `translateY(${thumbPos}px)`,
-            transition: isDragging ? 'none' : 'transform 0.08s ease-out',
-            cursor: 'grab',
-        };
-
     return (
         <div
             className={`glass-scroll-container ${className}`}
-            style={containerStyle}
+            style={{ position: 'relative', ...style }}
             onMouseEnter={() => setIsHovering(true)}
             onMouseLeave={() => setIsHovering(false)}
         >
-            {/* Scrollable area (native scrollbar hidden via CSS) */}
-            <div
-                ref={scrollRef}
-                className="glass-scroll-area"
-                style={scrollAreaStyle}
-            >
+            <div ref={scrollRef} className="glass-scroll-area" style={scrollAreaStyle}>
                 {children}
             </div>
 
-            {/* Custom glass scrollbar track — always rendered but hidden via opacity */}
-            <div
-                ref={trackRef}
-                className="glass-scroll-track"
-                style={trackStyle}
-                onClick={handleTrackClick}
-            >
-                {/* Glass track background */}
-                <div className="glass-scroll-track-bg" />
-
-                {/* Glass thumb */}
+            {showVertical && (
                 <div
-                    ref={thumbRef}
-                    className="glass-scroll-thumb"
-                    style={thumbStyle}
-                    onPointerDown={handleThumbPointerDown}
-                    onPointerMove={handleThumbPointerMove}
-                    onPointerUp={handleThumbPointerUp}
-                    onPointerCancel={handleThumbPointerUp}
+                    ref={trackRefV}
+                    className="glass-scroll-track vertical"
+                    style={{
+                        position: 'absolute', right: 2, top: 4, bottom: showHorizontal && isOverflowingH ? 12 : 4,
+                        width: 6, borderRadius: 3, zIndex: 10, cursor: 'pointer',
+                        opacity: visibleV ? 1 : 0, transition: 'opacity 0.3s ease',
+                        pointerEvents: visibleV ? 'auto' : 'none'
+                    }}
                 >
-                    <div className="glass-scroll-thumb-inner" />
+                    <div className="glass-scroll-track-bg" />
+                    <div
+                        ref={thumbRefV}
+                        className="glass-scroll-thumb"
+                        style={{
+                            position: 'absolute', top: 0, left: 0, width: '100%', height: thumbSizeV,
+                            borderRadius: 3, transform: `translateY(${thumbPosV}px)`,
+                            transition: isDraggingV ? 'none' : 'transform 0.08s ease-out', cursor: 'grab'
+                        }}
+                        onPointerDown={handleThumbPointerDownV}
+                        onPointerMove={handleThumbPointerMoveV}
+                        onPointerUp={() => setIsDraggingV(false)}
+                        onPointerCancel={() => setIsDraggingV(false)}
+                    >
+                        <div className="glass-scroll-thumb-inner" />
+                    </div>
                 </div>
-            </div>
+            )}
+
+            {showHorizontal && (
+                <div
+                    ref={trackRefH}
+                    className="glass-scroll-track horizontal"
+                    style={{
+                        position: 'absolute', bottom: 2, left: 4, right: showVertical && isOverflowingV ? 12 : 4,
+                        height: 6, borderRadius: 3, zIndex: 10, cursor: 'pointer',
+                        opacity: visibleH ? 1 : 0, transition: 'opacity 0.3s ease',
+                        pointerEvents: visibleH ? 'auto' : 'none'
+                    }}
+                >
+                    <div className="glass-scroll-track-bg" />
+                    <div
+                        ref={thumbRefH}
+                        className="glass-scroll-thumb"
+                        style={{
+                            position: 'absolute', top: 0, left: 0, height: '100%', width: thumbSizeH,
+                            borderRadius: 3, transform: `translateX(${thumbPosH}px)`,
+                            transition: isDraggingH ? 'none' : 'transform 0.08s ease-out', cursor: 'grab'
+                        }}
+                        onPointerDown={handleThumbPointerDownH}
+                        onPointerMove={handleThumbPointerMoveH}
+                        onPointerUp={() => setIsDraggingH(false)}
+                        onPointerCancel={() => setIsDraggingH(false)}
+                    >
+                        <div className="glass-scroll-thumb-inner" />
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

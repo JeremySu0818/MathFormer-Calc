@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect } from 'react';
 import TitleBar from './components/TitleBar';
 import Display from './components/Display';
 import Keypad from './components/Keypad';
+import GlassScrollContainer from './components/GlassScrollContainer';
 
 type Operation = 'add' | 'sub' | 'mul' | 'div' | null;
 
@@ -323,11 +324,17 @@ function App() {
             </div>
 
             {isInstalling && installLogs.length > 0 && (
-              <div className="setup-logs">
-                {installLogs.map((log, i) => (
-                  <div key={i}>{log}</div>
-                ))}
-              </div>
+              <GlassScrollContainer
+                direction="both"
+                autoScrollToEnd
+                className="setup-logs-container"
+              >
+                <div className="setup-logs">
+                  {installLogs.map((log, i) => (
+                    <div key={i}>{log}</div>
+                  ))}
+                </div>
+              </GlassScrollContainer>
             )}
           </div>
         </div>

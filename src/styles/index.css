@@ -733,7 +733,7 @@ body {
   justify-content: center;
 }
 
-.setup-logs {
+.setup-logs-container {
   position: relative;
   z-index: 4;
   width: 100%;
@@ -741,13 +741,19 @@ body {
   background: rgba(0, 0, 0, 0.3);
   border-radius: var(--radius-lg);
   margin-top: var(--spacing-lg);
+  overflow: hidden;
+}
+
+.setup-logs {
   padding: var(--spacing-sm);
   font-family: var(--font-mono);
   font-size: 10px;
   color: var(--color-text-muted);
   text-align: left;
-  overflow-y: auto;
   line-height: 1.4;
+  white-space: pre;
+  min-width: 100%;
+  width: max-content;
 }
 
 .setup-progress {
