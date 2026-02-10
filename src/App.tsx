@@ -307,12 +307,7 @@ function App() {
           isLoading={state.isLoading}
         />
 
-        <div className="status-bar">
-          <span className={`status-indicator ${state.isLoading ? 'loading' : ''} ${state.error ? 'error' : ''}`} />
-          <span className="status-text">
-            {state.isLoading ? 'Computing...' : 'Ready'}
-          </span>
-        </div>
+
       </div>
 
       {!isBackendReady && window.electronAPI && (
