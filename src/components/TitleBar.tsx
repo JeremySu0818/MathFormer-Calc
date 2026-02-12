@@ -29,7 +29,7 @@ function TitleBar(_props: TitleBarProps) {
       </div>
 
       <div className="title-bar-title"></div>
-    </div>
+    </div >
   );
 }
 

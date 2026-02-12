@@ -155,25 +155,24 @@ body {
   border: none;
   cursor: pointer;
   transition: all var(--transition-fast);
-  opacity: 0.8;
+  opacity: 1;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), inset 0.5px 0.5px 0 rgba(255, 255, 255, 0.5);
 }
 
 .title-bar-btn:hover {
-  opacity: 1;
   transform: scale(1.15);
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3), inset 0.5px 0.5px 0 rgba(255, 255, 255, 0.6);
-}
-
-.title-bar-btn.minimize {
-  background: linear-gradient(135deg, rgba(255, 210, 100, 0.9), rgba(255, 170, 50, 0.7));
 }
 
 .title-bar-btn.close {
-  background: linear-gradient(135deg, rgba(255, 130, 120, 0.9), rgba(255, 80, 70, 0.7));
+  background-color: #FF5F57;
 }
+
+.title-bar-btn.minimize {
+  background-color: #FEBC2E;
+}
+
+
 
 .calculator {
   flex: 1;
