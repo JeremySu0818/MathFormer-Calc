@@ -14,6 +14,8 @@ interface CalculatorState {
   expression: string;
   isLoading: boolean;
   error: string | null;
+  lastOperation: Operation;
+  lastSecondaryValue: string | null;
 }
 
 const initialState: CalculatorState = {
@@ -24,6 +26,8 @@ const initialState: CalculatorState = {
   expression: '',
   isLoading: false,
   error: null,
+  lastOperation: null,
+  lastSecondaryValue: null,
 };
 
 function App() {
@@ -201,27 +205,30 @@ function App() {
       }
 
       setState(prev => {
+        const baseState = {
+          ...prev,
+          displayValue: result,
+          isLoading: false,
+          error: null,
+          lastOperation: op,
+          lastSecondaryValue: currValue,
+        };
+
         if (nextOp) {
           return {
-            ...prev,
-            displayValue: result,
+            ...baseState,
             previousValue: result,
             operation: nextOp,
             waitingForOperand: true,
-            isLoading: false,
             expression: `${result} ${getOperationSymbol(nextOp)}`,
-            error: null,
           };
         }
 
         return {
-          ...prev,
-          displayValue: result,
+          ...baseState,
           previousValue: null,
           operation: null,
           waitingForOperand: true,
-          isLoading: false,
-          error: null,
         };
       });
     } catch (err) {
@@ -237,8 +244,10 @@ function App() {
   const handleEquals = useCallback(async () => {
     if (state.operation && state.previousValue !== null && !state.waitingForOperand) {
       await calculate(state.operation, state.previousValue, state.displayValue);
+    } else if (state.lastOperation && state.lastSecondaryValue !== null) {
+      await calculate(state.lastOperation, state.displayValue, state.lastSecondaryValue);
     }
-  }, [state.operation, state.previousValue, state.displayValue, state.waitingForOperand]);
+  }, [state.operation, state.previousValue, state.displayValue, state.waitingForOperand, state.lastOperation, state.lastSecondaryValue]);
 
   const handleBackspace = useCallback(() => {
     setState(prev => {

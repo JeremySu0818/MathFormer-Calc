@@ -47,8 +47,6 @@ function Keypad({
     const rect = button.getBoundingClientRect();
     const size = Math.max(rect.width, rect.height);
 
-    // Calculate coordinates for the ripple center
-    // If e is provided, use mouse coordinates. Otherwise, use button center.
     const x = e ? e.clientX - rect.left - size / 2 : rect.width / 2 - size / 2;
     const y = e ? e.clientY - rect.top - size / 2 : rect.height / 2 - size / 2;
 
@@ -63,10 +61,8 @@ function Keypad({
     setTimeout(() => ripple.remove(), 600);
   }, []);
 
-  // Trigger ripple effect when activeKey changes (keyboard input)
   useEffect(() => {
     if (activeKey) {
-      // Find the button with the matching label or mapping key
       const btnElement = buttonRefs.current[activeKey];
       if (btnElement) {
         createRipple(null, btnElement);
