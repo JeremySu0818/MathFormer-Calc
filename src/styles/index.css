@@ -115,7 +115,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--spacing-sm) var(--spacing-md);
+  padding: var(--spacing-md);
   -webkit-app-region: drag;
   user-select: none;
   position: relative;
@@ -144,7 +144,7 @@ body {
 
 .title-bar-controls {
   display: flex;
-  gap: var(--spacing-sm);
+  gap: var(--spacing-md);
   -webkit-app-region: no-drag;
 }
 
