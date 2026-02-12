@@ -31,6 +31,7 @@ function App() {
   const [isBackendReady, setIsBackendReady] = useState<boolean>(false);
   const [isInstalling, setIsInstalling] = useState<boolean>(false);
   const [installLogs, setInstallLogs] = useState<string[]>([]);
+  const [activeKey, setActiveKey] = useState<string | null>(null);
 
   const startInstallation = async () => {
     if (!window.electronAPI || isInstalling) return;
@@ -251,31 +252,52 @@ function App() {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key >= '0' && e.key <= '9') {
-        inputDigit(e.key);
-      } else if (e.key === '.') {
+      const key = e.key;
+      let actionKey: string | null = null;
+
+      if (key >= '0' && key <= '9') {
+        inputDigit(key);
+        actionKey = key;
+      } else if (key === '.') {
         inputDecimal();
-      } else if (e.key === '+') {
+        actionKey = '.';
+      } else if (key === '+') {
         performOperation('add');
-      } else if (e.key === '-') {
+        actionKey = '+';
+      } else if (key === '-') {
         performOperation('sub');
-      } else if (e.key === '*') {
+        actionKey = '-';
+      } else if (key === '*' || key.toLowerCase() === 'x') {
         performOperation('mul');
-      } else if (e.key === '/') {
+        actionKey = '×';
+      } else if (key === '/') {
         e.preventDefault();
         performOperation('div');
-      } else if (e.key === 'Enter' || e.key === '=') {
+        actionKey = '÷';
+      } else if (key === 'Enter' || key === '=') {
+        e.preventDefault();
         handleEquals();
-      } else if (e.key === 'Escape') {
+        actionKey = '=';
+      } else if (key === 'Escape' || key.toLowerCase() === 'c') {
         clearAll();
-      } else if (e.key === 'Backspace') {
+        actionKey = 'C';
+      } else if (key === 'Backspace') {
         handleBackspace();
+        actionKey = 'Backspace';
+      } else if (key === 'Delete') {
+        clearEntry();
+        actionKey = 'CE';
+      }
+
+      if (actionKey) {
+        setActiveKey(actionKey);
+        setTimeout(() => setActiveKey(null), 100);
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [inputDigit, inputDecimal, performOperation, handleEquals, clearAll, handleBackspace]);
+  }, [inputDigit, inputDecimal, performOperation, handleEquals, clearAll, clearEntry, handleBackspace]);
 
   return (
     <div className="app">
@@ -304,6 +326,7 @@ function App() {
           onBackspace={handleBackspace}
           activeOperation={state.operation}
           isLoading={state.isLoading}
+          activeKey={activeKey}
         />
 
 

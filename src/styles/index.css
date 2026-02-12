@@ -356,16 +356,16 @@ body {
 .keypad {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  grid-template-rows: repeat(6, 1fr);
+  grid-template-rows: repeat(5, 1fr);
   grid-template-areas:
-    "c ce sign div"
+    "c ce bs div"
     "n7 n8 n9 mul"
     "n4 n5 n6 sub"
     "n1 n2 n3 add"
-    "n0 n0 dot eq"
-    ". . . eq";
-  gap: 3px;
+    "sign n0 dot eq";
+  gap: 12px;
   flex: 1;
+  padding: 4px;
 }
 
 .btn-area-c {
@@ -374,6 +374,10 @@ body {
 
 .btn-area-ce {
   grid-area: ce;
+}
+
+.btn-area-bs {
+  grid-area: bs;
 }
 
 .btn-area-sign {
@@ -495,20 +499,21 @@ body {
 }
 
 .btn-area-n0.btn {
-  border-radius: 3rem;
-  aspect-ratio: auto;
-  width: calc((100% - 3px) / 2 + 3px + 65px);
+  border-radius: 50%;
+  aspect-ratio: 1;
+  width: auto;
   height: 90%;
-  max-width: 100%;
+  max-width: 65px;
   place-self: center;
 }
 
 .btn-area-eq.btn {
-  border-radius: 3rem;
-  aspect-ratio: auto;
-  width: 100%;
-  height: 100%;
-  max-height: 100%;
+  border-radius: 50%;
+  aspect-ratio: 1;
+  width: auto;
+  height: 90%;
+  max-width: 65px;
+  place-self: center;
 }
 
 .btn>.glass-content {
@@ -530,8 +535,14 @@ body {
   background-color: rgba(255, 255, 255, 0.28);
 }
 
-.btn:active {
+.btn:active,
+.btn.pressed {
   transform: scale(0.95);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.btn.pressed::before {
+  background-color: rgba(255, 255, 255, 0.4);
 }
 
 .btn-number::before {
