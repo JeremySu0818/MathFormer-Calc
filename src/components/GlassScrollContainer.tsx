@@ -33,6 +33,8 @@ function GlassScrollContainer({
     const [isDraggingV, setIsDraggingV] = useState(false);
     const [isDraggingH, setIsDraggingH] = useState(false);
     const [isHovering, setIsHovering] = useState(false);
+    const [scrollPos, setScrollPos] = useState({ left: 0, top: 0 });
+    const [scrollSize, setScrollSize] = useState({ width: 0, height: 0, clientWidth: 0, clientHeight: 0 });
 
     const dragStartRefV = useRef({ pointerPos: 0, scrollPos: 0 });
     const dragStartRefH = useRef({ pointerPos: 0, scrollPos: 0 });
@@ -93,6 +95,14 @@ function GlassScrollContainer({
                 setThumbPosH(scrollRatio * maxThumbPos);
             }
         }
+
+        setScrollPos({ left: el.scrollLeft, top: el.scrollTop });
+        setScrollSize({
+            width: el.scrollWidth,
+            height: el.scrollHeight,
+            clientWidth: el.clientWidth,
+            clientHeight: el.clientHeight
+        });
     }, [showVertical, showHorizontal]);
 
     useEffect(() => {
@@ -220,6 +230,64 @@ function GlassScrollContainer({
         height: '100%',
     };
 
+    const getMaskStyle = (): CSSProperties => {
+        if (direction === 'horizontal') {
+            if (!isOverflowingH) return {};
+
+            const isAtStart = scrollPos.left <= 2;
+            const isAtEnd = scrollPos.left + scrollSize.clientWidth >= scrollSize.width - 2;
+
+            if (isAtStart && isAtEnd) return {};
+            let mask = '';
+            const fadeSize = '40px';
+
+            if (!isAtStart && !isAtEnd) {
+                mask = `linear-gradient(to right, transparent, black ${fadeSize}, black calc(100% - ${fadeSize}), transparent)`;
+            } else if (!isAtStart) {
+                mask = `linear-gradient(to right, transparent, black ${fadeSize})`;
+            } else if (!isAtEnd) {
+                mask = `linear-gradient(to right, black calc(100% - ${fadeSize}), transparent)`;
+            }
+
+            return {
+                WebkitMaskImage: mask,
+                maskImage: mask,
+            };
+        }
+
+        if (direction === 'vertical') {
+            if (!isOverflowingV) return {};
+
+            const isAtStart = scrollPos.top <= 2;
+            const isAtEnd = scrollPos.top + scrollSize.clientHeight >= scrollSize.height - 2;
+
+            if (isAtStart && isAtEnd) return {};
+
+            let mask = '';
+            const fadeSize = '20px';
+
+            if (!isAtStart && !isAtEnd) {
+                mask = `linear-gradient(to bottom, transparent, black ${fadeSize}, black calc(100% - ${fadeSize}), transparent)`;
+            } else if (!isAtStart) {
+                mask = `linear-gradient(to bottom, transparent, black ${fadeSize})`;
+            } else if (!isAtEnd) {
+                mask = `linear-gradient(to bottom, black calc(100% - ${fadeSize}), transparent)`;
+            }
+
+            return {
+                WebkitMaskImage: mask,
+                maskImage: mask,
+            };
+        }
+
+        return {};
+    };
+
+    const combinedScrollAreaStyle: CSSProperties = {
+        ...scrollAreaStyle,
+        ...getMaskStyle(),
+    };
+
     return (
         <div
             className={`glass-scroll-container ${className}`}
@@ -227,7 +295,7 @@ function GlassScrollContainer({
             onMouseEnter={() => setIsHovering(true)}
             onMouseLeave={() => setIsHovering(false)}
         >
-            <div ref={scrollRef} className="glass-scroll-area" style={scrollAreaStyle}>
+            <div ref={scrollRef} className="glass-scroll-area" style={combinedScrollAreaStyle}>
                 {children}
             </div>
 
