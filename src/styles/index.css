@@ -154,22 +154,31 @@ body {
   border-radius: 50%;
   border: none;
   cursor: pointer;
-  transition: all var(--transition-fast);
-  opacity: 1;
-  position: relative;
-  overflow: hidden;
+  background: transparent;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  filter: saturate(1);
+}
+
+.title-bar-btn svg {
+  width: 100%;
+  height: 100%;
 }
 
 .title-bar-btn:hover {
-  transform: scale(1.15);
+  transform: scale(1.2);
+  filter: saturate(1.2) brightness(1.1);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
 
-.title-bar-btn.close {
-  background-color: #FF5F57;
-}
-
-.title-bar-btn.minimize {
-  background-color: #FEBC2E;
+.title-bar-btn:active,
+.title-bar-btn.pressed {
+  transform: scale(0.85);
+  filter: saturate(1.3) brightness(0.9);
+  transition-duration: 0.1s;
 }
 
 
