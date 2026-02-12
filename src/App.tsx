@@ -3,6 +3,7 @@ import TitleBar from './components/TitleBar';
 import Display from './components/Display';
 import Keypad from './components/Keypad';
 import GlassScrollContainer from './components/GlassScrollContainer';
+import CalculatorMenu from './components/CalculatorMenu';
 
 type Operation = 'add' | 'sub' | 'mul' | 'div' | null;
 
@@ -32,6 +33,7 @@ const initialState: CalculatorState = {
 
 function App() {
   const [state, setState] = useState<CalculatorState>(initialState);
+  const [mode, setMode] = useState<'standard' | 'scientific'>('standard');
   const [isBackendReady, setIsBackendReady] = useState<boolean>(false);
   const [isInstalling, setIsInstalling] = useState<boolean>(false);
   const [installLogs, setInstallLogs] = useState<string[]>([]);
@@ -317,6 +319,7 @@ function App() {
       <TitleBar />
 
       <div className="calculator">
+        <CalculatorMenu mode={mode} onModeChange={setMode} />
         <Display
           value={state.displayValue}
           expression={state.expression}
