@@ -315,8 +315,8 @@ function App() {
             <div className="setup-title">{isInstalling ? "Installing Dependencies" : "Starting MathFormer"}</div>
             <div className="setup-desc">
               {isInstalling
-                ? "Downloading and installing MathFormer neural network engine, please wait..."
-                : "Initializing neural network engine and verifying calculation capability..."}
+                ? "Setting up Python virtual environment and installing MathFormer core dependencies..."
+                : "Loading MathFormer package and initializing the computation service endpoint..."}
             </div>
 
             <div className="setup-progress">
