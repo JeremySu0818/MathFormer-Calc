@@ -15,20 +15,20 @@ function TitleBar(_props: TitleBarProps) {
 
   return (
     <div className="title-bar">
-      <div className="title-bar-title"></div>
-
       <div className="title-bar-controls">
-        <button
-          className="title-bar-btn minimize"
-          onClick={handleMinimize}
-          aria-label="Minimize window"
-        />
         <button
           className="title-bar-btn close"
           onClick={handleClose}
           aria-label="Close window"
         />
+        <button
+          className="title-bar-btn minimize"
+          onClick={handleMinimize}
+          aria-label="Minimize window"
+        />
       </div>
+
+      <div className="title-bar-title"></div>
     </div>
   );
 }
