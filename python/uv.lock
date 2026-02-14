@@ -621,7 +621,7 @@ wheels = [
 
 [[package]]
 name = "mathformer"
-version = "1.2.0"
+version = "1.2.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "safetensors", version = "0.5.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
@@ -632,9 +632,9 @@ dependencies = [
     { name = "transformers", version = "4.57.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.9.*'" },
     { name = "transformers", version = "5.1.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/de/6e/1de7d38b09c3f4a9aff05459248e61a640da8c852639a2d6997da1376f38/mathformer-1.2.0.tar.gz", hash = "sha256:be3eeede52a9edfb89f55843f12a11f185d07d99c0e7751a1e9233b4550d2ec8", size = 7911618, upload-time = "2026-02-10T21:10:53.586Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/8e/49/8c94e50d7d387dcfdce8925cadad36aed5fb506fe073415371b892cc432d/mathformer-1.2.1.tar.gz", hash = "sha256:6a5af09a932da4c3b919b778f4fcd70596bd4c55ed22946f7c673ae7ac140bc4", size = 7911552, upload-time = "2026-02-14T06:54:47.227Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/c3/2d/aa679b1dd0456864dbcf43c47771eda5bcf691936916b47c4b459a3440d0/mathformer-1.2.0-py3-none-any.whl", hash = "sha256:dda27566f4b4f9399cd66ea5e026ad7f4a83e4102125cfdcc448936d32b269a9", size = 7909652, upload-time = "2026-02-10T21:10:43.647Z" },
+    { url = "https://files.pythonhosted.org/packages/70/4d/aa5794eebda7281be71db8459c238b8ddd0b6876810123fd51c0876780f5/mathformer-1.2.1-py3-none-any.whl", hash = "sha256:22f54b7d36ee7836413b90b4bd3dd46748f7d29fe91f47169c5d74d656b78941", size = 7909342, upload-time = "2026-02-14T06:54:40.75Z" },
 ]
 
 [[package]]
@@ -649,7 +649,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "mathformer", specifier = "==1.2.0" },
+    { name = "mathformer", specifier = "==1.2.1" },
     { name = "torch", index = "https://download.pytorch.org/whl/cpu" },
 ]
 
